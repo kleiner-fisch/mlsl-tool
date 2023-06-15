@@ -1,0 +1,9 @@
+/* In this model car a violates the 1st sanity condition, that there is no car with a reservation and a claim for the same lane */
+ext=[0,12]
+lanes=[0,4]
+ego=c
+
+                                (0,6.5,3,f)
+    [2,2,1,a]     (1,3.5,1.5,e)             (1,8,2,h)
+    (2,2,1,a) (2,3,2,b) (2,4,2,c)           (2,8,2,h)
+                  (3,3.5,2,d)   (3,6,2,g)   [3,8,2,h]

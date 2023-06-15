@@ -1,0 +1,1 @@
+<@ re(ego) ; length <= 40 ; (exists c in cars. (!(c = ego) & re(c))) @>

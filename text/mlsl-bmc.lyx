@@ -1,0 +1,205 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand input
+filename "/home/user/sefie/phd/hein/mlsl-commands.lyx"
+
+\end_inset
+
+ This document describes ideas for bounded modelchecking of ACTA (timed
+ automata extended with MLSL).
+\end_layout
+
+\begin_layout Standard
+It should be assumed that there is a constant 
+\begin_inset Formula $c$
+\end_inset
+
+ that defines how many cars can be at most in a view.
+ This is neccessary, because with unbounded many cars MLSL is undecidable.
+ The state of a controller is 
+\begin_inset Formula $(q,\ts,x)$
+\end_inset
+
+ where 
+\begin_inset Formula $q$
+\end_inset
+
+ is a descrete controll state, 
+\begin_inset Formula $\ts$
+\end_inset
+
+ is the current snapshot and 
+\begin_inset Formula $x$
+\end_inset
+
+ is a clock valuation.
+ At transitions the controller may have actions changing the snapshot.
+ The only actions allowed are to let time pass and to change acceleration,
+ reservations, claims of the 
+\begin_inset Formula $\ego$
+\end_inset
+
+ car.
+ It can not directly affect the behavior of other cars.
+\end_layout
+
+\begin_layout Section
+Undecidability of ACTA
+\end_layout
+
+\begin_layout Standard
+We consider a weaker class of ACTA, where it is assumed that the view contains
+ at most 
+\begin_inset Formula $k$
+\end_inset
+
+ cars.
+ While MLSL is decidable with finitly many cars, we conjecture that ACTA
+ are not.
+ For this we point out that there is a result stating that for timed automata
+ with one skewed clock (a clock going at a different rate than 
+\begin_inset Formula $1$
+\end_inset
+
+) reachabillity is undecidable.
+ To reduce TA with a skewed clock to ACTA we consider the speed of the 
+\begin_inset Formula $\ego$
+\end_inset
+
+ car as the skewed clock and its acceleration as rate.
+ If one then allows to set constraints on the speed (guards at transitions
+ etc.), like on can do for clocks reachability propably is undecidable.
+ Some difficulties in proving this may be
+\end_layout
+
+\begin_layout Itemize
+there is a maximum speed.
+ However, e.g.
+ Fränzle and Swaminathan argued in 
+\shape italic
+Decidability and Optimum Reachability of MPTA 
+\shape default
+one can set an upper bound on the values of clocks.
+\end_layout
+
+\begin_layout Itemize
+we can not descretly reset speed.
+ Have construction similar to wrapping lemma in 
+\shape italic
+Undecidability of Hybrid Systems
+\shape default
+ by Henzinger.
+ Set maximum time it takes to decrease speed to 
+\begin_inset Formula $0$
+\end_inset
+
+ (if 
+\begin_inset Formula $0$
+\end_inset
+
+ is reached earlier just leave speed at 
+\begin_inset Formula $0$
+\end_inset
+
+ until max time is reached), and track this with a special clock.
+ During reset phase let all (except the special clock) be reset when their
+ value reaches max time.
+ When the special clock reaches max time all clocks have their values from
+ when the reset phase started and speed is 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ This asssumes that all clocks have values smaller than max time.
+\end_layout
+
+\begin_layout Itemize
+when increasing acceleration from 
+\begin_inset Formula $0$
+\end_inset
+
+ to some values, does this happen discretly? If not, this may cause trouble.
+\end_layout
+
+\begin_layout Standard
+Thus, by allowing the same constraints on speed as on clocks (e.g.
+ 
+\begin_inset Formula $\spd\leq c$
+\end_inset
+
+) as invariants and at guards ACTA become too powerful to automatically
+ check reachability.
+\end_layout
+
+\end_body
+\end_document

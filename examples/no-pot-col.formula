@@ -1,0 +1,3 @@
+/* no potential collision for ego formula.  */
+
+!<@ re(ego) & ( exists c in cars. ( !(ego = c) & (cl(c) | re(c)) ) ) @>

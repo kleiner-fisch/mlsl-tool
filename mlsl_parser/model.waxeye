@@ -1,0 +1,38 @@
+# We can create the parser with 
+# waxeye -p model -g python . model.waxeye
+
+Start <- Space Extension Lanes Ego *(Re_Expr | Cl_Expr)
+
+Extension 	<- :EXT 	:EQ :LB Float :COMMA Float :RB 
+Lanes		<- :LANES 	:EQ :LB Int :COMMA Int :RB 
+Ego 		<- :EGO 	:EQ Name
+
+# The syntax is: Lane, Pos, Size, Name, re|cl 
+# where in this version re|cl is represented by the parentheses used.
+# () are used for reservations, and [] are used for claims 
+#Car		<- :LP Int :COMMA Float :COMMA Float :COMMA Name :COMMA (CLM | RES) :RP 
+Re_Expr	<- :LP Int :COMMA Float :COMMA Float :COMMA Name :RP 
+Cl_Expr	<- :LB Int :COMMA Float :COMMA Float :COMMA Name :RB
+
+Name_Character	<= ([a-zA-Z] | [0-9] | [_-])
+Int				<- +([0-9]) Space
+Float			<- +([0-9]) ?('.' +([0-9])) Space
+Name			<- !(Keyword) [a-zA-Z] *(Name_Character) Space
+
+
+Keyword	<-	 ( EGO | EXT | LANES )
+
+COMMA	<: ','		Space
+LP		<: '('		Space
+RP		<:  ')'		Space
+LB	 	<: '[' 		Space
+RB		<: ']'		Space
+#RES 	<: 'r'
+#CLM		<: 'c'
+EGO 	<: 'ego' 	Space
+EXT 	<: 'ext' 	Space
+LANES 	<: 'lanes' 	Space
+EQ 		<: '=' 		Space
+
+Space   <: *(([ \t\n\r]) | Comment)
+Comment <: '/*' *(!('*/') .) '*/' 

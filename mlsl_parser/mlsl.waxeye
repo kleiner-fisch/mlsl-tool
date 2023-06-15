@@ -1,0 +1,107 @@
+# We can create the parser with 
+# waxeye -p formula -g python . mlsl.waxeye
+# -p formula is the prefix to use in the filename and the class name
+
+/*
+ * Grammar defined as, Parsing Expression Grammar, for the extended MLSL. 
+ * To be used with the parser generator 'waxexe' version 0.8
+ *
+ * - Currently modalities are not supported. 
+ * - We demand that explicit quantification provides information about the type 
+ *      of the quantified variable
+ *
+ * Operator Precedence:
+ * - boolean connectives before HCHOP and VCHOP
+ * - HCHOP before VCHOP
+ *
+ * Associativity:
+ * - Implication associates to the right
+ * - All other are associative, and we assume they assoviate to the right
+ *
+ * Created by Heinrich Ody, PhD student in the RTG SCARE at the university Oldenburg
+ */
+
+Start	<- Space VChop_Expr
+
+# The formulas
+# Currently everything is right associative??
+VChop_Expr 		<= HChop_Expr *(:VCHOP VChop_Expr)
+HChop_Expr 		<= Iff_Expr *(:HCHOP HChop_Expr)
+Iff_Expr 		<= Implies_Expr *(:IFF Iff_Expr)
+# implies is right associative
+Implies_Expr 	<= Or_Expr *(:IMPLIES Implies_Expr)
+Or_Expr 		<= And_Expr *(:OR Or_Expr)
+And_Expr 		<= UnaryFormula *(:AND And_Expr)
+UnaryFormula <= (Not_Expr | Forall_Expr | Exists_Expr | Atom)
+Not_Expr 	<- :NOT Atom
+Forall_Expr	<- :FORALL Name :IN Type :DOT Atom
+Exists_Expr	<- :EXISTS Name :IN Type :DOT Atom
+
+# Here an atom is either an atom as known from logic, or an expression surrounded by some kind of matching parenthesis, which allows for clear precedence and parsing.
+Atom	<= TRUE | FALSE | Length_Comparisson | Height_Comparisson | Car_Comparisson | FREE | Re_Expr | Cl_Expr | LP VChop_Expr RP | Somewhere_Expr
+
+Somewhere_Expr	<- :BSWHERE VChop_Expr :ESWHERE
+
+# A comparisson always has 3 children. The middle one always is the comparator
+Length_Comparisson <- (:LENGTH Comparator Real_Value)
+	
+Height_Comparisson <- (:HEIGHT Comparator Int_Value)
+
+Car_Comparisson <- (EGO | Name) :EQ (EGO | Name)
+
+Comparator	<=	(GEQ | LEQ | LESS | GREATER | EQ)
+Type 		<= (CARS | EXTS | LANES)
+Int_Value 	<= (Name | Int) *(PLUS (Name | Int))
+Real_Value 	<= (Name | Float) *(PLUS (Name | Float))
+
+Re_Expr		<- :RE LP (EGO | Name) RP
+Cl_Expr		<- :CL LP (EGO | Name) RP
+
+Name			<- !(Keyword) [a-zA-Z] *(Name_Character) Space
+Name_Character	<= ([a-zA-Z] | [0-9] | [_-])
+Int				<- +([0-9]) Space
+Float			<- +([0-9]) ?('.'+([0-9])) Space
+
+Keyword	<-	(CARS | EXTS | LANES | EGO | RE | CL | LENGTH | HEIGHT | FALSE | TRUE | FORALL | EXISTS | IN | FREE)
+
+# Keywords
+CARS	<- :( 'cars') 		!(Name_Character) Space
+EXTS	<- :( 'exts')		!(Name_Character) Space
+LANES	<- :( 'lanes')		!(Name_Character) Space
+EGO		<- :( 'ego')		!(Name_Character) Space
+RE		<- :( 're')			!(Name_Character) Space
+CL		<- :( 'cl')			!(Name_Character) Space
+LENGTH 	<- :( 'length')		!(Name_Character) Space
+HEIGHT 	<- :( 'height')		!(Name_Character) Space
+FALSE 	<- :( 'false')		!(Name_Character) Space
+TRUE 	<- :( 'true')		!(Name_Character) Space
+FORALL	<- :('forall')		!(Name_Character) Space
+EXISTS	<- :('exists')		!(Name_Character) Space
+IN		<- :('in')			!(Name_Character) Space
+FREE	<- :('free')		!(Name_Character) Space
+
+#Operators
+DOT	<- :'.' 	Space
+NOT		<- :'!' 	Space
+GEQ		<- :'>=' 	Space
+LEQ		<- :'<=' 	Space
+LESS	<- :'<' 	Space 
+GREATER	<- :'>' 	Space
+EQ		<- :'=' 	Space
+VCHOP	<- :'/' 	Space
+HCHOP	<- :';' 	Space
+IMPLIES	<- :'-->' 	Space
+IFF		<- :'<->' 	Space
+OR		<- :'|' 	Space
+AND		<- :'&' 	Space
+PLUS	<- :'+' 	Space
+
+BSWHERE	<- :'<@'	Space
+ESWHERE	<- :'@>'	Space
+
+# Parentheses
+LP	<: 	'('	Space
+RP	<: 	')'	Space
+
+Space   <: *(([ \t\n\r]) | Comment)
+Comment <: '/*' *(!('*/') .) '*/' 

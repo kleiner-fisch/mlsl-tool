@@ -1,0 +1,194 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+
+\size large
+\color red
+TODO: For quantifiers over cars we quantifiy only over the cars visible
+ in the intial view.
+ This may cause porblems...
+ Svens example: 
+\begin_inset Formula $\exists c,d.c=d;c=d$
+\end_inset
+
+!=
+\end_layout
+
+\begin_layout Standard
+For an EMLSL formula 
+\begin_inset Formula $\varphi$
+\end_inset
+
+ and a view 
+\begin_inset Formula $V$
+\end_inset
+
+ we define a transformation to an SMT instance s.t.
+ the view satisfies the formula iff the SMT instance is satisfiable.
+ We define a function 
+\begin_inset Formula 
+\begin{gather*}
+\mathit{empty}:\mathcal{V}\rightarrow\mathit{SMT}\\
+\mathit{empty}(([l,n],[r,t],E)):=[\lor](m-l<0,t-r\leq0),
+\end{gather*}
+
+\end_inset
+
+i.e.
+ 
+\begin_inset Formula $\mathit{empty}$
+\end_inset
+
+ returns a SMT formula that is satisfiable iff the view 
+\begin_inset Formula $v$
+\end_inset
+
+ is empty.
+ Further we define a function 
+\begin_inset Formula 
+\[
+\mathit{expr}:\mathit{MLSL}_{\mathit{expr}}\rightarrow\mathit{SMT}_{\mathit{expr}},
+\]
+
+\end_inset
+
+ which returns for a MLSL expression a SMT expression as 
+\begin_inset Formula 
+\begin{align*}
+\mathit{eval}(z) & := &  & \mathit{Int}(z) & \text{if }z\in\mathit{LVar}\\
+\mathit{eval}(z) & := &  & \mathit{Real}(z) & \text{if }z\in\mathit{RVar}\\
+\mathit{eval}(n) & := &  & \mathit{Int}(n) & \text{if }n\in\mathbb{L}\\
+\mathit{eval}(r) & := &  & \mathit{Real}(r) & \text{if }r\in\mathbb{R}\\
+\mathit{eval}(g_{0}+g_{1}) & := &  & \mathit{eval}(g_{0})+\mathit{eval}(g_{1})
+\end{align*}
+
+\end_inset
+
+Also, we define 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f:\mathcal{V}\times\mathcal{F}\rightarrow\mathit{SMT}_{\mathit{form}},
+\]
+
+\end_inset
+
+as
+\begin_inset Formula 
+\begin{align*}
+f & (V,{\psi_{0}\atop \psi_{1}},\nu):= &  & [\lor]\Biggl([\land]\bigl(\mathit{empty}(v),f(V,\psi_{0},\nu),f(V,\psi_{1},\nu)\bigr),\\
+ &  &  & \qquad[\land]\Bigl([\lnot](\mathit{empty}(v)),[\exists m\in\mathbb{R}]\bigl([\land](l\leq m\leq n,f(V_{[l,m]},\psi_{0},\nu),f(V_{[m+1,n]},\psi_{1},\nu))\bigr)\Bigr)\Biggr)\\
+f & (V,\psi_{0};\psi_{1},\nu):= &  & [\exists s\in\mathbb{L}]\Bigl([\land]\bigl(r\leq s\leq t,f(V^{[r,s]},\psi_{0},\nu),f(V^{[s,t]},\psi_{1},\nu)\bigr)\Bigr)\\
+f & (V,\psi_{0}\land\psi_{1},\nu):= &  & [\land]\bigl(f(V,\psi_{0},\nu),f(V,\psi_{1},\nu)\bigr)\\
+f & (V,\lnot\psi,\nu):= &  & [\lnot](f(V,\psi,\nu))\\
+f & (V,\bot,\nu):= &  & [\bot]\\
+f & (V,\forall z\in M.\psi,\nu):= &  & [\forall z\in M](f(V,\psi,\nu))\\
+f & (V,\mathit{re}(c),\nu):= &  & [|L|=1\land|X|>0\land L\subseteq\mathit{res}'(\nu'(c))\land\mathit{pos}'(\nu'(c))\leq r\land\mathit{pos}'(\nu'(c))+\mathit{size}(\nu'(c))\geq t]\\
+f & (V,\mathit{cl}(c),\nu):= &  & [|L|=1\land|X|>0\land L\subseteq\mathit{clm}'(\nu'(c))\land\mathit{pos}'(\nu'(c))\leq r\land\mathit{pos}'(\nu'(c))+\mathit{size}(\nu'(c))\geq t]\\
+f & (V,\ell\sim g,\nu):= &  & [t-r\sim\mathit{expr}(g)]\\
+f & (V,\omega\sim g,\nu):= &  & [n-l\sim\mathit{expr}(g)]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The primed functions are SMT functions for which we assume that they return
+ for the same input the same value as their unprimed non-SMT versions.
+ We assume that the view contains only finitly many cars and we do not consider
+ cars outside of the view.
+ Thus, the equality of the primed and unprimed functions can easily be ensured
+ with finitly many assertions, which we do not show here.
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\mathit{eval}(g)$
+\end_inset
+
+ takes an arithmetic expression and transforms it into the SMT version of
+ an arithmetic expression.
+ We differentiate between 
+\begin_inset Formula $f$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathit{eval}$
+\end_inset
+
+, because 
+\begin_inset Formula $f$
+\end_inset
+
+ returns SMT formulas for which the satisfiability can be checked by a SMT
+ solver, while 
+\begin_inset Formula $\mathit{eval}$
+\end_inset
+
+ returns SMT expressions.
+\end_layout
+
+\end_body
+\end_document

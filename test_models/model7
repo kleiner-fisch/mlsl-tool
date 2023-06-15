@@ -1,0 +1,7 @@
+/* H ere we have two reservations. The reservation of e is behind of a and overlaps with it  */
+ext=[0,12]
+lanes=[1,2]
+ego=E
+	(3,2,1,A)
+    [2,2,1,A]     (2,3,1.5,E) 
+
